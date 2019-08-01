@@ -13,7 +13,7 @@ import (
 // StartUpdate starts the update handler service.
 // This service determines what to do with server updates from the pinger.
 func StartUpdate(c *model.Config) {
-	go updates(c.Pinging, c.Sleeping)
+	go updates(c.Updates, c.Sleeping)
 }
 
 func updates(in <-chan *model.Server, out chan<- *model.Server) {

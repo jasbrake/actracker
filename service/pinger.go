@@ -13,7 +13,7 @@ import (
 // StartPinger starts the pinging service
 func StartPinger(c *model.Config) {
 	for i := 0; i < c.PingerCount; i++ {
-		go pinger(c.Pinging, c.Sleeping)
+		go pinger(c.Pinging, c.Updates)
 	}
 }
 
