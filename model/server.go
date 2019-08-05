@@ -6,6 +6,7 @@ import (
 	"net"
 
 	"github.com/jasbrake/actracker/db"
+	"github.com/jasbrake/actracker/geoip"
 	"github.com/jasbrake/actracker/lib/pgnet"
 )
 
@@ -36,10 +37,20 @@ func NewServer(ip string, port int) *Server {
 	}
 }
 
+func (s *Server) UpdateLocation() {
+	geo, err := geoip.DB.Country(s.IP.IP)
+	if err != nil {
+		log.Printf("failed to find GeoIP for %s: %s", s.IP, err)
+	} else {
+		s.Country = geo.Country.Names["en"]
+		s.CountryISO = geo.Country.IsoCode
+	}
+}
+
 // Save saves the server into the DB
 func (s *Server) Save() error {
 	statement := `
-	INSERT INTO servers (key, ip, port, description, max_clients, country, country_iso, match, custom_connect, on_ms, disabled, dead)
+	INSERT INTO server (key, ip, port, description, max_clients, country, country_iso, match, custom_connect, on_ms, disabled, dead)
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 	ON CONFLICT (key) DO UPDATE SET
 	description=EXCLUDED.description, max_clients=EXCLUDED.max_clients`
@@ -52,7 +63,7 @@ func (s *Server) Save() error {
 
 // GetServers loads the servers from the DB
 func GetServers() ([]*Server, error) {
-	query := `SELECT * FROM servers`
+	query := `SELECT * FROM server`
 	servers := make([]*Server, 0)
 	rows, err := db.Conn.Queryx(query)
 	if err != nil {
