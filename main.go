@@ -16,5 +16,5 @@ func main() {
 	service.StartUpdate(config)
 	service.StartPinger(config)
 	service.StartServerFetcher(config)
-	api.Start()
+	api.Start(config)
 }
