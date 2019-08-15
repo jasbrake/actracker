@@ -13,7 +13,9 @@ func Start() {
 	errChan := make(chan error)
 	R := gin.Default()
 
-	R.Use(cors.Default())
+	if gin.Mode() == gin.DebugMode {
+		R.Use(cors.Default())
+	}
 
 	R.GET("/servers", func(c *gin.Context) {
 		servers := state.GetActiveServers()
