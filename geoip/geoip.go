@@ -19,5 +19,4 @@ func Setup() {
 	if err != nil {
 		log.Fatalf("Failed to read GeoIP DB: %s", err)
 	}
-	log.Printf("Loaded GeoIP DB: %s", DB.Metadata().DatabaseType)
 }

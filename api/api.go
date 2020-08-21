@@ -1,19 +1,23 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/jasbrake/actracker/model"
 	"github.com/jasbrake/actracker/state"
 )
 
 // Start creates the API web handler
-func Start() {
+func Start(c *model.Config) {
 	errChan := make(chan error)
 	R := gin.Default()
 
-	R.Use(cors.Default())
+	if gin.Mode() == gin.DebugMode {
+		R.Use(cors.Default())
+	}
 
 	R.GET("/servers", func(c *gin.Context) {
 		servers := state.GetActiveServers()
@@ -21,7 +25,7 @@ func Start() {
 	})
 
 	go func() {
-		errChan <- R.Run(":3000")
+		errChan <- R.Run(fmt.Sprintf(":%d", c.Port))
 	}()
 
 	err := <-errChan

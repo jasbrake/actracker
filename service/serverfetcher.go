@@ -23,12 +23,10 @@ func init() {
 // StartServerFetcher creates the server fetching service.
 // It fetches servers from the DB and from the masterserver.
 func StartServerFetcher(c *model.Config) {
-	queueServers(c)
-
 	go func() {
 		for {
 			queueServers(c)
-			time.Sleep(time.Duration(12)*time.Hour)
+			time.Sleep(time.Duration(12) * time.Hour)
 		}
 	}()
 }
@@ -45,7 +43,6 @@ func queueServers(c *model.Config) {
 	servers := append(stored, remote...)
 
 	for _, s := range servers {
-	//for _, s := range stored {
 		// Queue all servers we don't have
 		_, ok := queued[s.Key]
 		if !ok {

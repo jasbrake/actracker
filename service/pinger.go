@@ -13,7 +13,7 @@ import (
 // StartPinger starts the pinging service
 func StartPinger(c *model.Config) {
 	for i := 0; i < c.PingerCount; i++ {
-		go pinger(c.Pinging, c.Sleeping)
+		go pinger(c.Pinging, c.Updates)
 	}
 }
 
@@ -42,9 +42,13 @@ func pingServer(s *model.Server) error {
 
 	s.TimeoutCount = 0
 
-	players := make([]acpinger.Player, 0)
+	players := make([]model.Player, 0)
 	if ext.Players != nil {
-		players = ext.Players
+		for _, p := range ext.Players {
+			player := model.NewPlayer(p)
+			player.UpdateLocation()
+			players = append(players, player)
+		}
 	}
 
 	s.Game = model.Game{
@@ -52,7 +56,7 @@ func pingServer(s *model.Server) error {
 		Mode:             std.Mode,
 		PlayerCount:      std.PlayerCount,
 		MinutesRemaining: std.MinutesRemaining,
-		CurrentMap:       std.CurrentMap,
+		Map:              std.CurrentMap,
 		Mastermode:       std.Mastermode,
 		Password:         std.Password,
 		Players:          players,

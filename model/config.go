@@ -14,6 +14,7 @@ type Config struct {
 	PingerCount     int
 	SleepSeconds    int
 	MaxSleepSeconds int
+	Port            int
 }
 
 // InitConfig initializes the config from the environment or DB
@@ -26,6 +27,7 @@ func InitConfig() *Config {
 	c.PingerCount = mustGetenvInt("PINGER_COUNT")
 	c.SleepSeconds = mustGetenvInt("SLEEP_SECONDS")
 	c.MaxSleepSeconds = mustGetenvInt("MAX_SLEEP_SECONDS")
+	c.Port = mustGetenvInt("APP_PORT")
 	return c
 }
 
