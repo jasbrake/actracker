@@ -2,6 +2,8 @@
 
 A service that periodically pings [AssaultCube](https://assault.cubers.net/) servers, provides an API for live games and tracks past games.
 
+The frontend is located in a separate repository [here](https://github.com/jasbrake/actracker-web).
+
 ## Features
 - Live game details
 - Past games and player scores saved to DB
