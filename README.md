@@ -1,5 +1,7 @@
 # AC Tracker
 
+A service that periodically pings [AssaultCube](https://assault.cubers.net/) servers, provides an API for live games and tracks past games.
+
 ## Features
 - Live game details
 - Past games and player scores saved to DB
@@ -9,6 +11,7 @@
 - Show past games by server
 - Player ladder
 - Highlight and separate competitive games ("inters") and tournaments from public games
+- Parse clan tags out of names to show online clan members
 
 ## API
 
