@@ -1,10 +1,8 @@
 package service
 
 import (
-	"log"
-	"net"
-	"os"
-	"syscall"
+	"fmt"
+	"strings"
 
 	"github.com/jasbrake/acpinger"
 	"github.com/jasbrake/actracker/model"
@@ -20,7 +18,7 @@ func StartPinger(c *model.Config) {
 func pinger(in <-chan *model.Server, out chan<- *model.Server) {
 	for s := range in {
 		err := pingServer(s)
-		logPingError(err)
+		handlePingError(s, err)
 		out <- s
 	}
 }
@@ -28,7 +26,6 @@ func pinger(in <-chan *model.Server, out chan<- *model.Server) {
 func pingServer(s *model.Server) error {
 	std, err := acpinger.PingStd(s.IP.String(), s.Port, 0)
 	if err != nil {
-		s.TimeoutCount++
 		return err
 	}
 	s.Description = std.Description
@@ -36,7 +33,6 @@ func pingServer(s *model.Server) error {
 
 	ext, err := acpinger.PingExt(s.IP.String(), s.Port, 0)
 	if err != nil {
-		s.TimeoutCount++
 		return err
 	}
 
@@ -64,21 +60,21 @@ func pingServer(s *model.Server) error {
 	return nil
 }
 
-func logPingError(err error) {
+func handlePingError(s *model.Server, err error) {
 	if err != nil {
-		// Log the error if it isn't a timeout or "connection refused"
-		// This is pretty gross but besides just ignoring the error, I'm not sure
-		// how best to handle servers being offline or timing out.
-		if opErr, ok := err.(*net.OpError); ok {
-			if syscallErr, ok := opErr.Err.(*os.SyscallError); ok {
-				if syscallErr.Err != syscall.ECONNREFUSED {
-					log.Println(syscallErr)
-				}
-			} else if nerr, ok := err.(net.Error); ok && !nerr.Timeout() {
-				log.Println(nerr)
-			}
-		} else {
-			log.Println(err)
+		e := err.Error()
+
+		if strings.Contains(e, "read: connection refused") ||
+			strings.Contains(e, "read: no route to host") {
+			s.Dead = true
+			return
 		}
+
+		if strings.Contains(e, "i/o timeout") {
+			s.TimeoutCount++
+			return
+		}
+
+		fmt.Printf("ping error (%s): %s\n", s.Key, err.Error())
 	}
 }

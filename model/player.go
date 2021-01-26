@@ -38,7 +38,7 @@ func NewPlayer(p acpinger.Player) Player {
 
 	return Player{
 		Name:         p.Name,
-		IP:           pgnet.CIDR{cidr},
+		IP:           pgnet.CIDR{IPNet: cidr},
 		ClientNumber: p.ClientNumber,
 		Ping:         p.Ping,
 		Team:         p.Team,
