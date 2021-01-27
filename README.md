@@ -23,6 +23,17 @@ All endpoints return JSON.
 
 Returns a list of servers with active games along with the live game details.
 
+### `/player/:name`
+
+Returns a list of recent games for a player name.
+
+### `/player_autocomplete`
+
+Expects a query parameter `q`.
+
+Returns a list of player names that start with the query.
+
+
 ## Development
 
 In order to run for development, create a `.env` file with your environment variables then run `./dev.sh`.

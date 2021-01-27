@@ -71,3 +71,18 @@ func (p *Player) UpdateLocation() {
 		p.CountryISO = geo.Country.IsoCode
 	}
 }
+
+// GetPlayerNames gets all players names that start with the provided pattern
+func GetPlayerNames(startsWith string) ([]string, error) {
+	var names []string
+
+	query := "SELECT DISTINCT(name) FROM game_player WHERE name LIKE $1 || '%' LIMIT 10;"
+
+	stmt, err := db.Conn.Preparex(query)
+	if err != nil {
+		return names, err
+	}
+
+	err = stmt.Select(&names, startsWith)
+	return names, err
+}

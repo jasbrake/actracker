@@ -1,6 +1,7 @@
 package api
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -22,6 +23,40 @@ func Start(c *model.Config) {
 	R.GET("/servers", func(c *gin.Context) {
 		servers := state.GetActiveServers()
 		c.JSON(http.StatusOK, servers)
+	})
+
+	R.GET("/player", func(c *gin.Context) {
+		name := c.Query("name")
+		if len(name) <= 0 {
+			_ = c.AbortWithError(http.StatusBadRequest, errors.New("missing 'name' query parameter"))
+			return
+		}
+
+		gamePlayers, err := model.GetPlayerGames(name)
+		if err != nil {
+			_ = c.AbortWithError(http.StatusInternalServerError, err)
+			fmt.Println(err)
+			return
+		}
+
+		c.JSON(http.StatusOK, gamePlayers)
+	})
+
+	R.GET("/player_autocomplete", func(c *gin.Context) {
+		name := c.Query("q")
+		if len(name) <= 0 {
+			_ = c.AbortWithError(http.StatusBadRequest, errors.New("missing 'q' query parameter"))
+			return
+		}
+
+		names, err := model.GetPlayerNames(name)
+		if err != nil {
+			_ = c.AbortWithError(http.StatusInternalServerError, err)
+			fmt.Println(err)
+			return
+		}
+
+		c.JSON(http.StatusOK, names)
 	})
 
 	go func() {
