@@ -80,7 +80,11 @@ func fetchServersFromMS() ([]*model.Server, error) {
 			}
 			s := model.NewServer(ip, port)
 			s.OnMasterServer = true
-			servers = append(servers, s)
+
+			// Only add the server if the IP was validly parsed
+			if s.IP.IP != nil {
+				servers = append(servers, s)
+			}
 		}
 	}
 	return servers, nil
